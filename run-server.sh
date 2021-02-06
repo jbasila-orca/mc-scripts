@@ -26,7 +26,8 @@ run-server() {
 		--volume ${server_path}:/mc-server \
 		--volume /etc/passwd:/etc/passwd:ro \
 		--volume /etc/group:/etc/group:ro \
-		-p ${port}:25565 \
+		-p ${port}:25565/tcp \
+		-p ${port}:25565/udp \
 		"${docker_image}" \
 		--workdir /mc-server \
 		--java-ops "${java_ops}"
