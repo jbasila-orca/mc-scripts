@@ -14,15 +14,16 @@ run-server() {
     docker_image="${1}"
     server_name="${2}"
     user_uid="${3}"
-    port="${4}"
-    java_opt="${5}"
+    user_gid="${4}"
+    port="${5}"
+    java_opt="${6}"
 
     server_path="${HOME}/minecraft/${server_name}"
     [[ ! -d "${server_path}" ]] && echo "path '${server_path}' does not point to a directory" && exit 1
 
     docker run -d \
         --restart=always \
-        --user="${user_uid}" \
+        --user="${user_uid}:${user_gid}" \
         --name "${server_name}" \
         --volume ${server_path}:/mc-server \
         --volume /etc/passwd:/etc/passwd:ro \
@@ -37,6 +38,7 @@ run-server() {
 main() {
 	docker_image="mc:latest"
 	user_uid=$(id -u)
+	user_gid=$(id -g)
 	port=25565
 	java_ops="-Xmx2G"
 
@@ -51,6 +53,11 @@ main() {
 				(( ${#} < 2 )) && usage "option '${1}' takes an argument" && exit 1
 				shift
 				user_uid="${1}"
+				;;
+            --guid)
+				(( ${#} < 2 )) && usage "option '${1}' takes an argument" && exit 1
+				shift
+				user_gid="${1}"
 				;;
 			--server-name)
 				(( ${#} < 2 )) && usage "option '${1}' takes an argument" && exit 1
@@ -78,7 +85,7 @@ main() {
 
 	(( ${#server_name} == 0 )) && usage "Must supply server_name" && exit 1
 	
-	run-server "${docker_image}" "${server_name}" "${user_uid}" "${port}" "${java_ops}"
+	run-server "${docker_image}" "${server_name}" "${user_uid}" "${user_gid}" "${port}" "${java_ops}"
 }
 
 main "${@}"
