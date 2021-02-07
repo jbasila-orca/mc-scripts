@@ -11,26 +11,27 @@ usage: $(basename $0) --server-name SERVERNAME [--image IMAGE] [--uid UID] [--po
 }
 
 run-server() {
-	docker_image="${1}"
-	server_name="${2}"
-	user_uid="${3}"
-	port="${4}"
-	java_opt="${5}"
+    docker_image="${1}"
+    server_name="${2}"
+    user_uid="${3}"
+    port="${4}"
+    java_opt="${5}"
 
-	server_path="${HOME}/minecraft/${server_name}"
-	[[ ! -d "${server_path}" ]] && echo "path '${server_path}' does not point to a directory" && exit 1
+    server_path="${HOME}/minecraft/${server_name}"
+    [[ ! -d "${server_path}" ]] && echo "path '${server_path}' does not point to a directory" && exit 1
 
-	docker run -d \
-		--user="${user_uid}" \
-		--name "${server_name}" \
-		--volume ${server_path}:/mc-server \
-		--volume /etc/passwd:/etc/passwd:ro \
-		--volume /etc/group:/etc/group:ro \
-		-p ${port}:25565/tcp \
-		-p ${port}:25565/udp \
-		"${docker_image}" \
-		--workdir /mc-server \
-		--java-ops "${java_ops}"
+    docker run -d \
+        --restart=always \
+        --user="${user_uid}" \
+        --name "${server_name}" \
+        --volume ${server_path}:/mc-server \
+        --volume /etc/passwd:/etc/passwd:ro \
+        --volume /etc/group:/etc/group:ro \
+        -p ${port}:25565/tcp \
+        -p ${port}:25565/udp \
+        "${docker_image}" \
+        --workdir /mc-server \
+        --java-ops "${java_ops}"
 }
 
 main() {
