@@ -1,4 +1,4 @@
-FROM openjdk:8-buster
+FROM openjdk:11-buster
 
 RUN apt-get update && \
 	apt-get upgrade -yy

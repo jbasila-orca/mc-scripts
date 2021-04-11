@@ -21,6 +21,7 @@ run-server() {
     server_path="${HOME}/minecraft/${server_name}"
     [[ ! -d "${server_path}" ]] && echo "path '${server_path}' does not point to a directory" && exit 1
 
+    web_port="80$(( port % 100 ))"
     docker run -d \
         --restart=always \
         --user="${user_uid}:${user_gid}" \
@@ -30,6 +31,7 @@ run-server() {
         --volume /etc/group:/etc/group:ro \
         -p ${port}:25565/tcp \
         -p ${port}:25565/udp \
+        -p ${web_port}:8123/tcp \
         "${docker_image}" \
         --workdir /mc-server \
         --java-ops "${java_ops}"
